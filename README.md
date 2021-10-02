@@ -8,14 +8,12 @@ Nicholas Cho
 
 Eric Li
 
-Jason Ali
-
 ## tasks overview
 - create game with pygame
 - create frontend
 - create flask app
 - deploy to heroku
-- create reinforcement learning application
+- create reinforcement learning agent
 
 ## Naming and typing conventions
 * `variableNames` in camelCase
