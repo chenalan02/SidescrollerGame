@@ -8,8 +8,6 @@ Nicholas Cho
 
 Eric Li
 
-Jason Ali
-
 ## tasks overview
 - create game with pygame
 - create frontend

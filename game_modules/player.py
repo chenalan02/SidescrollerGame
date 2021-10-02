@@ -62,6 +62,7 @@ class Player(pygame.sprite.Sprite):
     '''
     def update(self, floorHeight, screenSize):
         self.fall(floorHeight)
+        #does not allow player to leave boundaries of screen
         if self.rect.x + self.rect.width> screenSize[0]:
             self.rect.x = screenSize[0] - self.rect.width
         elif self.rect.x < 0:
