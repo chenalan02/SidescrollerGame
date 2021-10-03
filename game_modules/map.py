@@ -2,6 +2,7 @@ import pygame
 import math
 import os
 from player import Player
+import time
 
 SCREEN_SIZE = (1280, 720)
 FLOOR_HEIGHT = 50
@@ -68,6 +69,11 @@ class Map():
     def update(self):
         #event detection for keyboard input
         for event in pygame.event.get():
+            if event.type == pygame.KEYUP:
+                if event.key==pygame.K_LEFT:
+                    self.player.stop(direction="left")
+                elif event.key==pygame.K_RIGHT:
+                    self.player.stop(direction="right")
             
             if event.type == pygame.KEYDOWN:
                 #player movement in x axis using left and right arrow keys
@@ -75,9 +81,9 @@ class Map():
                     self.player.walk(direction="left")
                 elif event.key==pygame.K_RIGHT:
                     self.player.walk(direction="right")
-                #plater jumps when spacebar
+                #player jumps when spacebar
                 if event.key == pygame.K_SPACE:
-                    self.player.jump()
+                    self.player.startJump()
 
             #quits game if x clicked on top right of screen
             if event.type == pygame.QUIT: 
@@ -88,6 +94,7 @@ class Map():
         #draws map
         self.draw()
         #updates screen
+        time.sleep(0.005)
         pygame.display.flip()
 
     '''

@@ -18,8 +18,11 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         #rect.x refers to left, rect.y refers to top
-
         self.velocity = 0
+
+        self.jump_bool = False
+        self.jumpList = [30, 20, 20, 20, 15, 15, 15, 10, 10]
+        self.jumpIndex = 0
 
     '''
     Method to walk left and right by changing velocity
@@ -35,27 +38,40 @@ class Player(pygame.sprite.Sprite):
     '''
     Method to stop walking by resetting velocity to 0
     '''
-    def stop(self):
-        self.velocity = 0
+    def stop(self, direction):
+        if direction == "right" and self.velocity > 0:
+            self.velocity = 0
+        elif direction == "left" and self.velocity < 0:
+            self.velocity = 0
 
     '''
     Method to jump
 
     TO BE REVISED
     '''
+    def startJump(self):
+        self.jump_bool = True
+
     def jump(self):
-        self.rect.y -= 50
+        if self.jump_bool == True:
+            self.rect.y -= self.jumpList[self.jumpIndex]
+            self.jumpIndex += 1
+
+            if self.jumpIndex > len(self.jumpList) - 1:
+                self.jump_bool = False
+                self.jumpIndex = 0
 
     '''
     Method to fall at a constant rate of 3 pixels per frame
     '''
     def fall(self, floorHeight):
         #falls by 3 pixels per inch when above floor
-        if self.rect.y + self.rect.height < 720 - floorHeight:
-            self.rect.y += 3
-        #sets height on floow when not above floor
+        if self.rect.y + self.rect.height < 720 - floorHeight and not self.jump_bool:
+            self.rect.y += 2
+        #sets height on floor when not above floor
         else:
-            self.rect.y = 720 - floorHeight - self.rect.height
+            pass
+            #self.rect.y = 720 - floorHeight - self.rect.height
         
     '''
     Updates position of player by falling and sideways movement depending on velocity
@@ -63,11 +79,12 @@ class Player(pygame.sprite.Sprite):
     def update(self, floorHeight, screenSize):
         self.fall(floorHeight)
         #does not allow player to leave boundaries of screen
-        if self.rect.x + self.rect.width> screenSize[0]:
+        if self.rect.x + self.rect.width > screenSize[0]:
             self.rect.x = screenSize[0] - self.rect.width
         elif self.rect.x < 0:
             self.rect.x = 0
 
+        self.jump()
         self.rect.x += self.velocity 
     
 
