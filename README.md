@@ -1,19 +1,30 @@
 # SidescrollerGame
 A collaboration sidescroller game using Python
 
-## Contributors
-Alan Chen
-
-Nicholas Cho
-
-Eric Li
-
-## tasks overview
+## Task Overview
 - create game with pygame
 - create frontend
 - create flask app
 - deploy to heroku
 - create reinforcement learning agent
+
+## Anticipated Contributions
+### Alan Chen
+- project lead
+- game logic lead
+- RL lead
+- contribute to flask backend
+
+### Nicholas Cho
+- front end lead
+- contribute to flask backend
+- contribute to game features
+- art lead
+
+### Eric Li
+- creativity lead
+- contribute to game features
+- contribute to art
 
 ## Naming and typing conventions
 * `variableNames` in camelCase
