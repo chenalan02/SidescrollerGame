@@ -107,7 +107,8 @@ class Map():
                 return True
 
         #updates player
-        self.player.update(FLOOR_HEIGHT, SCREEN_SIZE)
+        platformsTouching = pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].platforms, False)
+        self.player.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
         #draws map
         self.draw()
         #sets constant fps

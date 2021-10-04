@@ -25,7 +25,8 @@ class Player(pygame.sprite.Sprite):
         #boolean for whether the player is currently in a jump animation
         self.jump_bool = False
         #pixel values for addition to y value for each frame in the jump animation
-        self.jumpList = [15, 15, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, -5, -5, -5, -5, -5 ]
+        self.jumpList = [15, 15, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 
+                        1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -3, -3, -3, -3, -4, -4, -4, -4]
         #index in the current jump animation list
         self.jumpIndex = 0
 
@@ -64,6 +65,7 @@ class Player(pygame.sprite.Sprite):
     adds to y value of player from a predefined list of values 
     '''
     def jump(self):
+        #adds to y value if during jump animation
         if self.jump_bool == True:
             self.rect.y -= self.jumpList[self.jumpIndex]
             self.jumpIndex += 1
@@ -78,9 +80,9 @@ class Player(pygame.sprite.Sprite):
 
     floorHeight = height of floor in pixels from bottom of screen
     '''
-    def fall(self, floorHeight):
+    def fall(self, floorHeight, platformsTouching):
         #test if player is above floor level to determine if grounded
-        if self.rect.y + self.rect.height < 720 - floorHeight:
+        if self.rect.y + self.rect.height < 720 - floorHeight and platformsTouching == []:
             #falls by 3 pixels per inch when not during jump animation
             if not self.jump_bool:
                 self.rect.y += 5
@@ -92,8 +94,8 @@ class Player(pygame.sprite.Sprite):
     '''
     Updates position of player by falling and sideways movement depending on velocity
     '''
-    def update(self, floorHeight, screenSize):
-        self.fall(floorHeight)
+    def update(self, floorHeight, screenSize, platformsTouching):
+        self.fall(floorHeight, platformsTouching)
         #does not allow player to leave boundaries of screen
         if self.rect.x + self.rect.width > screenSize[0]:
             self.rect.x = screenSize[0] - self.rect.width
