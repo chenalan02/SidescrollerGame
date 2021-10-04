@@ -18,60 +18,76 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         #rect.x refers to left, rect.y refers to top
-        self.velocity = 0
+        self.velocityX = 0
+        #boolean for whether the player is grounded
+        self.grounded = False
 
+        #boolean for whether the player is currently in a jump animation
         self.jump_bool = False
-        self.jumpList = [30, 20, 20, 20, 15, 15, 15, 10, 10]
+        #pixel values for addition to y value for each frame in the jump animation
+        self.jumpList = [15, 15, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, -5, -5, -5, -5, -5 ]
+        #index in the current jump animation list
         self.jumpIndex = 0
 
     '''
-    Method to walk left and right by changing velocity
-
-    direction = "left" or "right"
+    Methods to walk left and right by changing velocity
     '''
-    def walk(self, direction):
-        if direction == 'left':
-            self.velocity = -1
-        elif direction == 'right':
-            self.velocity = 1
+    def walkLeft(self):
+        self.velocityX = -3
+
+    def walkRight(self):
+        self.velocityX = 3
 
     '''
     Method to stop walking by resetting velocity to 0
+    specific to directions since we do not want to stop moving right when the player let go of the left key
     '''
-    def stop(self, direction):
-        if direction == "right" and self.velocity > 0:
-            self.velocity = 0
-        elif direction == "left" and self.velocity < 0:
-            self.velocity = 0
+    def stopLeft(self):
+        if self.velocityX < 0:
+            self.velocityX = 0
+
+
+    def stopRight(self):
+        if self.velocityX > 0:
+            self.velocityX = 0
 
     '''
-    Method to jump
-
-    TO BE REVISED
+    Method to start a jump animation
     '''
     def startJump(self):
-        self.jump_bool = True
+        #only start a jump when grounded
+        if self.grounded:
+            self.jump_bool = True
 
+    '''
+    Method to perform jump animation
+    adds to y value of player from a predefined list of values 
+    '''
     def jump(self):
         if self.jump_bool == True:
             self.rect.y -= self.jumpList[self.jumpIndex]
             self.jumpIndex += 1
 
+            #end of jump animation
             if self.jumpIndex > len(self.jumpList) - 1:
                 self.jump_bool = False
                 self.jumpIndex = 0
 
     '''
     Method to fall at a constant rate of 3 pixels per frame
+
+    floorHeight = height of floor in pixels from bottom of screen
     '''
     def fall(self, floorHeight):
-        #falls by 3 pixels per inch when above floor
-        if self.rect.y + self.rect.height < 720 - floorHeight and not self.jump_bool:
-            self.rect.y += 2
-        #sets height on floor when not above floor
+        #test if player is above floor level to determine if grounded
+        if self.rect.y + self.rect.height < 720 - floorHeight:
+            #falls by 3 pixels per inch when not during jump animation
+            if not self.jump_bool:
+                self.rect.y += 5
+            self.grounded = False
+        #grounded when not above floor
         else:
-            pass
-            #self.rect.y = 720 - floorHeight - self.rect.height
+            self.grounded = True
         
     '''
     Updates position of player by falling and sideways movement depending on velocity
@@ -85,7 +101,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = 0
 
         self.jump()
-        self.rect.x += self.velocity 
+        self.rect.x += self.velocityX 
     
 
     

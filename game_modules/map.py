@@ -1,7 +1,9 @@
+from typing import Tuple
 import pygame
 import math
 import os
 from player import Player
+from terrain import Platform
 import time
 
 SCREEN_SIZE = (1280, 720)
@@ -15,13 +17,20 @@ player = player object
 spawnPoint = (x, y) coordinates for player to be spawned
 '''
 class Section():
-    def __init__ (self, backgroundFileName, player, spawnPoint):
+    def __init__ (self, backgroundFileName, spawnPoint: tuple):
         #load background as pygame Surface object
         self.background = pygame.image.load(os.path.join('game_assets', backgroundFileName))
         self.background = pygame.transform.scale(self.background, SCREEN_SIZE)
+        self.spawnPoint = spawnPoint
         #sets player pos to spawnpoint
-        player.rect.x = spawnPoint[0]
-        player.rect.y = spawnPoint[1]
+        self.platforms = pygame.sprite.Group()
+
+    def start_section(self, player: Player):
+        player.rect.x = self.spawnPoint[0]
+        player.rect.y = self.spawnPoint[1]
+
+    def add_platform(self, coordinates:tuple, length):
+        self.platforms.add(Platform(coordinates, length))
 
     '''
     draws section
@@ -30,12 +39,13 @@ class Section():
     '''
     def draw(self, screen):
         screen.blit(self.background, (0,0))
+        self.platforms.draw(screen)
 
 '''
 Class for a map or level as a whole
 '''
 class Map():
-    def __init__ (self):
+    def __init__ (self, FPS):
         #list of sections
         self.sections = []
         #current section index
@@ -43,6 +53,8 @@ class Map():
 
         #sets screen size
         self.screenSize = SCREEN_SIZE
+        #game fps
+        self.FPS = FPS
 
         self.player = Player()
         #pygame sprite list required for printing and collision detection
@@ -69,18 +81,23 @@ class Map():
     def update(self):
         #event detection for keyboard input
         for event in pygame.event.get():
+
+            #when a key is released
             if event.type == pygame.KEYUP:
+                #stops movement in left direction when the left key is released
                 if event.key==pygame.K_LEFT:
-                    self.player.stop(direction="left")
+                    self.player.stopLeft()
+                #stops movement in right direction when the right key is released
                 elif event.key==pygame.K_RIGHT:
-                    self.player.stop(direction="right")
+                    self.player.stopRight()
             
+            #when a key is pressed down
             if event.type == pygame.KEYDOWN:
                 #player movement in x axis using left and right arrow keys
                 if event.key==pygame.K_LEFT:
-                    self.player.walk(direction="left")
+                    self.player.walkLeft()
                 elif event.key==pygame.K_RIGHT:
-                    self.player.walk(direction="right")
+                    self.player.walkRight()
                 #player jumps when spacebar
                 if event.key == pygame.K_SPACE:
                     self.player.startJump()
@@ -93,16 +110,19 @@ class Map():
         self.player.update(FLOOR_HEIGHT, SCREEN_SIZE)
         #draws map
         self.draw()
+        #sets constant fps
+        self.clock.tick(self.FPS)
         #updates screen
-        time.sleep(0.005)
         pygame.display.flip()
 
     '''
     adds a section to the map
     '''
-    def add_section(self, backgroundFileName, spawnPoint):
-        section = Section(backgroundFileName, self.player, spawnPoint)
+    def add_section(self, section):
         self.sections.append(section)
+
+    def map_start(self):
+        self.sections[0].start_section(self.player)
 
 
     
