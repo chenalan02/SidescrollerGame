@@ -5,6 +5,7 @@ import os
 from player import Player
 from terrain import Platform
 import time
+from enemies import Enemy
 
 SCREEN_SIZE = (1280, 720)
 FLOOR_HEIGHT = 50
@@ -24,13 +25,19 @@ class Section():
         self.spawnPoint = spawnPoint
         #sets player pos to spawnpoint
         self.platforms = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
 
-    def start_section(self, player: Player):
+    def start_section(self, player: Player,):
         player.rect.x = self.spawnPoint[0]
         player.rect.y = self.spawnPoint[1]
 
     def add_platform(self, coordinates:tuple, length):
         self.platforms.add(Platform(coordinates, length))
+
+    def add_enemy(self,spawn):
+        enemy = Enemy(spawn)
+        self.enemies.add(enemy)
+
 
     '''
     draws section
@@ -40,6 +47,7 @@ class Section():
     def draw(self, screen):
         screen.blit(self.background, (0,0))
         self.platforms.draw(screen)
+        self.enemies.draw(screen)
 
 '''
 Class for a map or level as a whole
@@ -109,13 +117,14 @@ class Map():
         #updates player
         platformsTouching = pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].platforms, False)
         self.player.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
+        for enemy in self.sections[self.currentSection].enemies:
+            enemy.update(SCREEN_SIZE)
         #draws map
         self.draw()
         #sets constant fps
         self.clock.tick(self.FPS)
         #updates screen
         pygame.display.flip()
-
     '''
     adds a section to the map
     '''
