@@ -5,7 +5,7 @@ import os
 '''
 Class for player object
 
-coordinates = (x, y)
+coordinates: (x, y) position of the top left of the player model
 '''
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -76,14 +76,15 @@ class Player(pygame.sprite.Sprite):
                 self.jumpIndex = 0
 
     '''
-    Method to fall at a constant rate of 3 pixels per frame
+    Method to fall at a constant rate of 5 pixels per frame
 
-    floorHeight = height of floor in pixels from bottom of screen
+    floorHeight: height of floor in pixels from bottom of screen
+    platformsTouching: list of platforms that are colliding with the player
     '''
     def fall(self, floorHeight, platformsTouching):
         #test if player is above floor level to determine if grounded
         if self.rect.y + self.rect.height < 720 - floorHeight and platformsTouching == []:
-            #falls by 3 pixels per inch when not during jump animation
+            #falls by 5 pixels per inch when not during jump animation
             if not self.jump_bool:
                 self.rect.y += 5
             self.grounded = False
@@ -93,6 +94,10 @@ class Player(pygame.sprite.Sprite):
         
     '''
     Updates position of player by falling and sideways movement depending on velocity
+
+    floorHeight: height of floor in pixels from bottom of screen
+    screenSize: (width, height) of game screen
+    platformsTouching: list of platforms that are colliding with the player
     '''
     def update(self, floorHeight, screenSize, platformsTouching):
         self.fall(floorHeight, platformsTouching)
