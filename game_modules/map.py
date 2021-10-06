@@ -27,14 +27,30 @@ class Section():
         self.platforms = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
 
+    '''
+    initializes section by changing character position to the section's spawn
+
+    player: the player object
+    '''
     def start_section(self, player: Player,):
         player.rect.x = self.spawnPoint[0]
         player.rect.y = self.spawnPoint[1]
 
+    '''
+    adds a platform to the map
+
+    coordinates: (x, y) of the top left of the platform
+    length: length of the platform
+    '''
     def add_platform(self, coordinates:tuple, length):
         self.platforms.add(Platform(coordinates, length))
 
-    def add_enemy(self,spawn):
+    '''
+    adds an enemy to the map
+
+    spawn: (x, y) spawnpoint for the top left of the enemy model
+    '''
+    def add_enemy(self, spawn):
         enemy = Enemy(spawn)
         self.enemies.add(enemy)
 
@@ -42,7 +58,7 @@ class Section():
     '''
     draws section
 
-    screen = pygame screen object
+    screen: pygame screen object
     '''
     def draw(self, screen):
         screen.blit(self.background, (0,0))
@@ -51,6 +67,9 @@ class Section():
 
 '''
 Class for a map or level as a whole
+each map has multiple sections that the player can travel between
+
+FPS: frames per second limit of the game
 '''
 class Map():
     def __init__ (self, FPS):
@@ -117,20 +136,28 @@ class Map():
         #updates player
         platformsTouching = pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].platforms, False)
         self.player.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
+
+        #updates all enemies
         for enemy in self.sections[self.currentSection].enemies:
-            enemy.update(SCREEN_SIZE)
+            platformsTouching = pygame.sprite.spritecollide(enemy, self.sections[self.currentSection].platforms, False)
+            enemy.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
+
         #draws map
         self.draw()
         #sets constant fps
         self.clock.tick(self.FPS)
         #updates screen
         pygame.display.flip()
+
     '''
     adds a section to the map
     '''
     def add_section(self, section):
         self.sections.append(section)
 
+    '''
+    starts/initializes the map and first section
+    '''
     def map_start(self):
         self.sections[0].start_section(self.player)
 

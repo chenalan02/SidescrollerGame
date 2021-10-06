@@ -4,8 +4,8 @@ import os
 '''
 Platform object that player can stand on and pass through from the underside
 
-coordinates= (x,y) - top left corner of platform
-length= length of platform
+coordinates: (x,y) - top left corner of platform
+length: length of platform
 '''
 class Platform(pygame.sprite.Sprite):
     def __init__(self, coordinates:tuple, length):
