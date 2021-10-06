@@ -1,25 +1,16 @@
 # SidescrollerGame
-A collaboration sidescroller game using Python
-
-## Task Overview
-- create game with pygame
-- create frontend
-- create flask app
-- deploy to heroku
-- create reinforcement learning agent
+A sidescroller game created using pygame similar to Mario. Will include a map creation ui and a Reinforcment Learning(RL) autoplay function.
 
 ## Anticipated Contributions
 ### Alan Chen
 - project lead
 - game logic lead
 - RL lead
-- contribute to flask backend
 
 ### Nicholas Cho
-- front end lead
-- contribute to flask backend
-- contribute to game features
 - art lead
+- contribute to game features
+- maybe contribute to RL
 
 ### Eric Li
 - creativity lead
