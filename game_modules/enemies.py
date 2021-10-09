@@ -15,12 +15,23 @@ class Enemy(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50, 70))
         self.rect = self.image.get_rect()
 
+        #saves spawn for game restart purposes
+        self.spawn = spawn
+
         #default walks to the right on spawn
         self.velocityX = 3
 
         #sets position to spawn
         self.rect.x = spawn[0]
         self.rect.y = spawn[1]
+
+    '''
+    Method to reset state of enemy for when game restarts
+    '''
+    def reinitialize(self):
+        self.rect.x = self.spawn[0]
+        self.rect.y = self.spawn[1]
+        self.velocityX = 3
 
     '''
     Methods to walk left and right by changing velocity
