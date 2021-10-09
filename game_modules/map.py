@@ -1,11 +1,9 @@
-from typing import Tuple
-import pygame
-import math
 import os
+import pygame
+
 from player import Player
 from terrain import Platform
-import time
-from enemies import Enemy
+from enemies import Enemy, FlyingEnemy
 
 SCREEN_SIZE = (1280, 720)
 FLOOR_HEIGHT = 50
@@ -45,6 +43,7 @@ class Section():
         #pygame groups for sprites
         self.platforms = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.flyingEnemies = pygame.sprite.Group()
 
         #creates portal objects for entrance and exit of section
         self.portals = pygame.sprite.Group()
@@ -73,13 +72,17 @@ class Section():
         self.platforms.add(Platform(coordinates, length))
 
     '''
-    adds an enemy to the map
+    Methods to add enemies to the section
 
     spawn: (x, y) spawnpoint for the top left of the enemy model
     '''
     def add_enemy(self, spawn):
         enemy = Enemy(spawn)
         self.enemies.add(enemy)
+
+    def add_flying_enemy(self, spawn):
+        flyingEnemy = FlyingEnemy(spawn)
+        self.flyingEnemies.add(flyingEnemy)
 
     '''
     draws everything in the section
@@ -90,6 +93,7 @@ class Section():
         screen.blit(self.background, (0,0))
         self.platforms.draw(screen)
         self.enemies.draw(screen)
+        self.flyingEnemies.draw(screen)
         self.portals.draw(screen)
 
 
@@ -169,6 +173,11 @@ class Map():
         for enemy in self.sections[self.currentSection].enemies:
             platformsTouching = pygame.sprite.spritecollide(enemy, self.sections[self.currentSection].platforms, False)
             enemy.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
+            
+        #updates flying enemies
+        for flyingEnemy in self.sections[self.currentSection].flyingEnemies:
+            platformsTouching = pygame.sprite.spritecollide(flyingEnemy, self.sections[self.currentSection].platforms, False)
+            flyingEnemy.update(self.player)
 
         #checks if the player has touched the exit portal to change sections
         if self.check_exit(self.player):
@@ -219,6 +228,8 @@ class Map():
     def check_death(self):
         if pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].enemies, False) != []:
             self.restart_game()
+        if pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].flyingEnemies, False) != []:
+            self.restart_game()
 
     '''
     restarts the game
@@ -230,6 +241,8 @@ class Map():
         for section in self.sections:
             for enemy in section.enemies:
                 enemy.reinitialize()
+            for flyingEnemy in section.flyingEnemies:
+                flyingEnemy.reinitialize()
 
         #restarts the map at the first section
         self.map_start()
