@@ -5,7 +5,7 @@ import os
 from player import Player
 from terrain import Platform
 import time
-from enemies import Enemy
+from enemies import Enemy , FlyingEnemy
 
 SCREEN_SIZE = (1280, 720)
 FLOOR_HEIGHT = 50
@@ -26,6 +26,7 @@ class Section():
         #sets player pos to spawnpoint
         self.platforms = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.flyingEnemies = pygame.sprite.Group()
 
     '''
     initializes section by changing character position to the section's spawn
@@ -54,6 +55,9 @@ class Section():
         enemy = Enemy(spawn)
         self.enemies.add(enemy)
 
+    def add_flying_enemy(self, spawn):
+        enemy = FlyingEnemy(spawn)
+        self.flyingEnemies.add(enemy)
 
     '''
     draws section
@@ -64,6 +68,7 @@ class Section():
         screen.blit(self.background, (0,0))
         self.platforms.draw(screen)
         self.enemies.draw(screen)
+        self.flyingEnemies.draw(screen)
 
 '''
 Class for a map or level as a whole
@@ -141,6 +146,10 @@ class Map():
         for enemy in self.sections[self.currentSection].enemies:
             platformsTouching = pygame.sprite.spritecollide(enemy, self.sections[self.currentSection].platforms, False)
             enemy.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
+
+        for flyingEnemy in self.sections[self.currentSection].flyingEnemies:
+            platformsTouching = pygame.sprite.spritecollide(flyingEnemy, self.sections[self.currentSection].platforms, False)
+            flyingEnemy.update(self.player)
 
         #draws map
         self.draw()
