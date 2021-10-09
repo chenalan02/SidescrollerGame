@@ -76,6 +76,12 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += self.velocityX
         self.fall(floorHeight, platformsTouching)
 
+'''
+Class for flying enemy object
+flies directly towards player
+
+coordinates: (x, y) of top left corner of sprite
+'''
 class FlyingEnemy(pygame.sprite.Sprite):
     def __init__(self, spawn:tuple):
         super().__init__()
@@ -84,39 +90,69 @@ class FlyingEnemy(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50, 70))
         self.rect = self.image.get_rect()
     
-        #sets position to spawn
+        #saves spawn for game restart purposes
+        self.spawn = spawn
+
+        #instaniates position to spawn
         self.rect.x = spawn[0]
         self.rect.y = spawn[1]
 
+        #instaniates velocities
         self.velocityX = 0.0
         self.velocityY = 0.0
 
+        #x and y position as floats for physics purposes(rect.y and rect.y cant be floats)
         self.x = spawn[0]
         self.y = spawn[1]
 
-    def find_angle(self , player):
-        #calculating change in x and y axis
+    '''
+    Method to reset state of enemy for when game restarts
+    '''
+    def reinitialize(self):
+        self.rect.x = self.spawn[0]
+        self.rect.y = self.spawn[1]
+        self.x = self.spawn[0]
+        self.y = self.spawn[1]
+        self.velocityX = 0.0
+        self.velocityY = 0.0
+
+    '''
+    Find the angle between the enemy and the player
+
+    player: player object
+    '''
+    def find_angle(self, player):
+        #calculating x and y displacement
         deltaX = player.rect.x - self.rect.x
         deltaY = player.rect.y - self.rect.y
         
+        #special case to prevent division by 0
         if deltaX == 0:
             deltaX = 1 
 
         angle = atan(deltaY/deltaX)
 
+        #cases where the angle is in the 2nd or 3rd quadrant
         if deltaX < 0:
             angle += pi
 
         return angle
     
+    '''
+    Updates flying enemy every frame
+    moves towards player at a velocity of 1 pixel per frame
+
+    coordinates = (x, y)
+    '''
     def update(self, player):
         angle = self.find_angle(player) 
         
-        self.velocityX = 1 * cos(angle)
-        self.velocityY = 1 * sin(angle)
-        
+        #components of 1 pixel/frame velocity
+        self.velocityX = cos(angle)
+        self.velocityY = sin(angle)
+        #add components to x and y position
         self.x += self.velocityX
         self.y += self.velocityY
-        
+        #truncate x and y position to pygame sprite position
         self.rect.x = int(self.x)
         self.rect.y = int(self.y)

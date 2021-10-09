@@ -1,11 +1,9 @@
-from typing import Tuple
-import pygame
-import math
 import os
+import pygame
+
 from player import Player
 from terrain import Platform
-import time
-from enemies import Enemy , FlyingEnemy
+from enemies import Enemy, FlyingEnemy
 
 SCREEN_SIZE = (1280, 720)
 FLOOR_HEIGHT = 50
@@ -74,7 +72,7 @@ class Section():
         self.platforms.add(Platform(coordinates, length))
 
     '''
-    adds an enemy to the map
+    Methods to add enemies to the section
 
     spawn: (x, y) spawnpoint for the top left of the enemy model
     '''
@@ -83,8 +81,8 @@ class Section():
         self.enemies.add(enemy)
 
     def add_flying_enemy(self, spawn):
-        enemy = FlyingEnemy(spawn)
-        self.flyingEnemies.add(enemy)
+        flyingEnemy = FlyingEnemy(spawn)
+        self.flyingEnemies.add(flyingEnemy)
 
     '''
     draws everything in the section
@@ -230,6 +228,8 @@ class Map():
     def check_death(self):
         if pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].enemies, False) != []:
             self.restart_game()
+        if pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].flyingEnemies, False) != []:
+            self.restart_game()
 
     '''
     restarts the game
@@ -241,6 +241,8 @@ class Map():
         for section in self.sections:
             for enemy in section.enemies:
                 enemy.reinitialize()
+            for flyingEnemy in section.flyingEnemies:
+                flyingEnemy.reinitialize()
 
         #restarts the map at the first section
         self.map_start()
