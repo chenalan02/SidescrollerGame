@@ -11,22 +11,49 @@ SCREEN_SIZE = (1280, 720)
 FLOOR_HEIGHT = 50
 
 '''
+Sprite for the entrance and exit portals of a section
+
+coordinates: (x,y) of the top left corner of portal
+'''
+class Portal(pygame.sprite.Sprite):
+    def __init__(self, coordinates):
+        super().__init__()
+        #load sprite as pygame Surface object
+        self.image = pygame.image.load(os.path.join('game_assets', "portal.png"))
+        self.image = pygame.transform.scale(self.image, (50, 100))
+
+        #set position
+        self.rect = self.image.get_rect()
+        self.rect.x = coordinates[0]
+        self.rect.y = coordinates[1]
+
+'''
 Class for a single section of the whole map
 
-backgroundFileName = file name of the background
-player = player object
-spawnPoint = (x, y) coordinates for player to be spawned
+backgroundFileName: file name of the background
+player: player object
+spawnPoint: (x, y) coordinates for player to be spawned
 '''
 class Section():
-    def __init__ (self, backgroundFileName, spawnPoint: tuple):
+    def __init__ (self, backgroundFileName, spawnPoint: tuple, exitPortalPos: tuple):
         #load background as pygame Surface object
         self.background = pygame.image.load(os.path.join('game_assets', backgroundFileName))
         self.background = pygame.transform.scale(self.background, SCREEN_SIZE)
+
         self.spawnPoint = spawnPoint
-        #sets player pos to spawnpoint
+
+        #pygame groups for sprites
         self.platforms = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.flyingEnemies = pygame.sprite.Group()
+
+        #creates portal objects for entrance and exit of section
+        self.portals = pygame.sprite.Group()
+        self.entrancePortal = Portal(spawnPoint)
+        self.exitPortal = Portal(exitPortalPos)
+        self.portals.add(self.entrancePortal)
+        self.portals.add(self.exitPortal)
+        
 
     '''
     initializes section by changing character position to the section's spawn
@@ -60,7 +87,7 @@ class Section():
         self.flyingEnemies.add(enemy)
 
     '''
-    draws section
+    draws everything in the section
 
     screen: pygame screen object
     '''
@@ -69,6 +96,8 @@ class Section():
         self.platforms.draw(screen)
         self.enemies.draw(screen)
         self.flyingEnemies.draw(screen)
+        self.portals.draw(screen)
+
 
 '''
 Class for a map or level as a whole
@@ -146,10 +175,18 @@ class Map():
         for enemy in self.sections[self.currentSection].enemies:
             platformsTouching = pygame.sprite.spritecollide(enemy, self.sections[self.currentSection].platforms, False)
             enemy.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
-
+            
+        #updates flying enemies
         for flyingEnemy in self.sections[self.currentSection].flyingEnemies:
             platformsTouching = pygame.sprite.spritecollide(flyingEnemy, self.sections[self.currentSection].platforms, False)
             flyingEnemy.update(self.player)
+
+        #checks if the player has touched the exit portal to change sections
+        if self.check_exit(self.player):
+            self.change_section()
+
+        #checks if the player has died
+        self.check_death()
 
         #draws map
         self.draw()
@@ -157,6 +194,56 @@ class Map():
         self.clock.tick(self.FPS)
         #updates screen
         pygame.display.flip()
+
+    '''
+    check if player touched the exit portal
+
+    player: player object
+    '''
+    def check_exit(self, player):
+        currentSection = self.sections[self.currentSection]
+        if pygame.sprite.collide_rect(player, currentSection.exitPortal):
+            return True
+        else:
+            return False
+
+    '''
+    changes the section of the map to the next one
+    '''
+    def change_section(self):
+        self.currentSection += 1
+        if self.currentSection >= len(self.sections):
+            self.game_win()
+
+        self.sections[self.currentSection].start_section(self.player)
+
+    '''
+    restarts game when the game is over
+    TO CHANGE MAYBE
+    '''
+    def game_win(self):
+        self.restart_game()
+
+    '''
+    checks if the player has died by colliding with an enemy or hazard
+    '''
+    def check_death(self):
+        if pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].enemies, False) != []:
+            self.restart_game()
+
+    '''
+    restarts the game
+    '''
+    def restart_game(self):
+        #resets current section to the first
+        self.currentSection = 0
+        #restarts all enemy objects in every section to their default/spawn states
+        for section in self.sections:
+            for enemy in section.enemies:
+                enemy.reinitialize()
+
+        #restarts the map at the first section
+        self.map_start()
 
     '''
     adds a section to the map
