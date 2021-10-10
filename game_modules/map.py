@@ -1,110 +1,18 @@
-import os
 import pygame
 
 from player import Player
-from terrain import Platform
-from enemies import WalkingEnemy, FlyingEnemy
 
 SCREEN_SIZE = (1280, 720)
 FLOOR_HEIGHT = 50
 
 '''
-Sprite for the entrance and exit portals of a section
-
-coordinates: (x,y) of the top left corner of portal
-'''
-class Portal(pygame.sprite.Sprite):
-    def __init__(self, coordinates):
-        super().__init__()
-        #load sprite as pygame Surface object
-        self.image = pygame.image.load(os.path.join('game_assets', "portal.png"))
-        self.image = pygame.transform.scale(self.image, (50, 100))
-
-        #set position
-        self.rect = self.image.get_rect()
-        self.rect.x = coordinates[0]
-        self.rect.y = coordinates[1]
-
-'''
-Class for a single section of the whole map
-
-backgroundFileName: file name of the background
-player: player object
-spawnPoint: (x, y) coordinates for player to be spawned
-'''
-class Section():
-    def __init__ (self, backgroundFileName, spawnPoint: tuple, exitPortalPos: tuple):
-        #load background as pygame Surface object
-        self.background = pygame.image.load(os.path.join('game_assets', 'backgrounds', backgroundFileName))
-        self.background = pygame.transform.scale(self.background, SCREEN_SIZE)
-
-        self.spawnPoint = spawnPoint
-
-        #pygame groups for sprites
-        self.platforms = pygame.sprite.Group()
-        self.walkingEnemies = pygame.sprite.Group()
-        self.flyingEnemies = pygame.sprite.Group()
-
-        #creates portal objects for entrance and exit of section
-        self.portals = pygame.sprite.Group()
-        self.entrancePortal = Portal(spawnPoint)
-        self.exitPortal = Portal(exitPortalPos)
-        self.portals.add(self.entrancePortal)
-        self.portals.add(self.exitPortal)
-        
-
-    '''
-    initializes section by changing character position to the section's spawn
-
-    player: the player object
-    '''
-    def start_section(self, player: Player,):
-        player.rect.x = self.spawnPoint[0]
-        player.rect.y = self.spawnPoint[1]
-
-    '''
-    adds a platform to the map
-
-    coordinates: (x, y) of the top left of the platform
-    length: length of the platform
-    '''
-    def add_platform(self, coordinates:tuple, length):
-        self.platforms.add(Platform(coordinates, length))
-
-    '''
-    Methods to add walking enemies to the section
-
-    spawn: (x, y) spawnpoint for the top left of the enemy model
-    '''
-    def add_walking_enemy(self, spawn):
-        enemy = WalkingEnemy(spawn)
-        self.walkingEnemies.add(enemy)
-
-    def add_flying_enemy(self, spawn):
-        enemy = FlyingEnemy(spawn)
-        self.flyingEnemies.add(enemy)
-
-    '''
-    draws everything in the section
-
-    screen: pygame screen object
-    '''
-    def draw(self, screen):
-        screen.blit(self.background, (0,0))
-        self.platforms.draw(screen)
-        self.walkingEnemies.draw(screen)
-        self.flyingEnemies.draw(screen)
-        self.portals.draw(screen)
-
-
-'''
 Class for a map or level as a whole
 each map has multiple sections that the player can travel between
 
-FPS: frames per second limit of the game
+fps: frames per second limit of the game
 '''
 class Map():
-    def __init__ (self, FPS):
+    def __init__ (self):
         #list of sections
         self.sections = []
         #current section index
@@ -113,7 +21,7 @@ class Map():
         #sets screen size
         self.screenSize = SCREEN_SIZE
         #game fps
-        self.FPS = FPS
+        self.fps = 200
 
         self.player = Player()
         #pygame sprite list required for printing and collision detection
@@ -122,7 +30,7 @@ class Map():
 
         #pygame setup
         pygame.init()
-        pygame.display.set_caption('SideScroller')
+        pygame.display.set_caption('Side Scroller')
         self.screen = pygame.display.set_mode(self.screenSize)
         self.clock = pygame.time.Clock()
 
@@ -187,7 +95,6 @@ class Map():
         #restarts the map at the first section
         self.map_start()
 
-    
     '''
     updates game frame by frame
     processes pygame events(keyboard inputs)
@@ -244,7 +151,7 @@ class Map():
         #draws map
         self.draw()
         #sets constant fps
-        self.clock.tick(self.FPS)
+        self.clock.tick(self.fps)
         #updates screen
         pygame.display.flip()
 
@@ -259,6 +166,18 @@ class Map():
     '''
     def map_start(self):
         self.sections[0].start_section(self.player)
+
+    '''
+    changes fps of the map
+    '''
+    def change_fps(self, fps):
+        self.fps = fps
+
+    def save_map(self, fileName):
+        pass
+
+    def load_map(self, fileName):
+        pass
 
 
     

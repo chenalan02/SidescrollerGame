@@ -1,8 +1,9 @@
 import pygame
-from map import Map, Section
+from map import Map
+from section import Section
 
 if __name__ == "__main__":
-    map = Map(FPS=200)
+    map = Map()
 
     section = Section(backgroundFileName='forest.jpg', spawnPoint=(500,500), exitPortalPos=(1000, 400))
     section.add_platform(coordinates=(700, 500), length=250)
