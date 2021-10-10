@@ -4,27 +4,40 @@ from math import sin, cos, degrees, atan, pi
 import os
 
 '''
-Class for enemy object
+Parent class for basic enemy features
 
-coordinates = (x, y)
+spawn = (x, y) coordinates of top left of sprite of spawn point
 '''
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, spawn:tuple):
+    def __init__(self, spawn:tuple, imageDir):
         super().__init__()
         #loads image as pygame Surface object
-        self.image = pygame.image.load(os.path.join(("game_assets"), "mario.png"))
+        self.image = pygame.image.load(os.path.join(("game_assets"), imageDir))
         self.image = pygame.transform.scale(self.image, (50, 70))
         self.rect = self.image.get_rect()
 
         #saves spawn for game restart purposes
         self.spawn = spawn
 
-        #default walks to the right on spawn
-        self.velocityX = 3
-
-        #sets position to spawn
+        #sets pygame rect positions to spawn
         self.rect.x = spawn[0]
         self.rect.y = spawn[1]
+
+        #x and y position as floats for physics purposes(rect.y and rect.y cant be floats)
+        self.x = spawn[0]
+        self.y = spawn[1] 
+
+'''
+Walking enemy that changes direction when it hits the edges of map
+
+spawn = (x, y) coordinates of top left of sprite of spawn point
+'''
+class WalkingEnemy(Enemy):
+    def __init__(self, spawn:tuple):
+        super().__init__(spawn, "mario.png")
+        
+        #default walks to the right on spawn
+        self.velocityX = 3
 
     '''
     Method to reset state of enemy for when game restarts
@@ -32,6 +45,8 @@ class Enemy(pygame.sprite.Sprite):
     def reinitialize(self):
         self.rect.x = self.spawn[0]
         self.rect.y = self.spawn[1]
+        self.x = self.spawn[0]
+        self.y = self.spawn[1] 
         self.velocityX = 3
 
     '''
@@ -82,28 +97,13 @@ flies directly towards player
 
 coordinates: (x, y) of top left corner of sprite
 '''
-class FlyingEnemy(pygame.sprite.Sprite):
+class FlyingEnemy(Enemy):
     def __init__(self, spawn:tuple):
-        super().__init__()
-        #loads image as pygame Surface object
-        self.image = pygame.image.load(os.path.join(("game_assets"), "mario.png"))
-        self.image = pygame.transform.scale(self.image, (50, 70))
-        self.rect = self.image.get_rect()
-    
-        #saves spawn for game restart purposes
-        self.spawn = spawn
-
-        #instaniates position to spawn
-        self.rect.x = spawn[0]
-        self.rect.y = spawn[1]
+        super().__init__(spawn, "mario.png")
 
         #instaniates velocities
         self.velocityX = 0.0
         self.velocityY = 0.0
-
-        #x and y position as floats for physics purposes(rect.y and rect.y cant be floats)
-        self.x = spawn[0]
-        self.y = spawn[1]
 
     '''
     Method to reset state of enemy for when game restarts
