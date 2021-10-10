@@ -1,5 +1,4 @@
 import pygame
-import math
 import os
 
 '''
@@ -11,7 +10,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         #loads image as pygame Surface object
-        self.image = pygame.image.load(os.path.join(("game_assets"), "mario.png"))
+        self.image = pygame.image.load(os.path.join("game_assets", "player.png"))
         self.image = pygame.transform.scale(self.image, (50, 70))
 
         #rect = [left, top, width, height]
@@ -19,6 +18,10 @@ class Player(pygame.sprite.Sprite):
 
         #rect.x refers to left, rect.y refers to top
         self.velocityX = 0
+
+        #variable for flipping sprite to face direction
+        self.direction = 'right'
+
         #boolean for whether the player is grounded
         self.grounded = False
 
@@ -34,11 +37,16 @@ class Player(pygame.sprite.Sprite):
     Methods to walk left and right by changing velocity
     '''
     def walkLeft(self):
+        if self.direction == 'right':
+            self.image = pygame.transform.flip(self.image, True, False)
+            self.direction = 'left'
         self.velocityX = -3
 
     def walkRight(self):
+        if self.direction == 'left':
+            self.image = pygame.transform.flip(self.image, True, False)
+            self.direction = 'right'
         self.velocityX = 3
-
     '''
     Method to stop walking by resetting velocity to 0
     specific to directions since we do not want to stop moving right when the player let go of the left key
