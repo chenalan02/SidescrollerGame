@@ -1,7 +1,11 @@
-import pygame
 import os
+import json
+import pygame
 
 from player import Player
+from section import Section
+from terrain import Platform
+from enemies import *
 
 SCREEN_SIZE = (1280, 720)
 FLOOR_HEIGHT = 50
@@ -91,7 +95,7 @@ class Map():
                 enemy.reinitialize()
 
         #restarts the map at the first section
-        self.map_start()
+        self.start()
 
     '''
     updates game frame by frame
@@ -134,7 +138,6 @@ class Map():
             platformsTouching = pygame.sprite.spritecollide(enemy, self.sections[self.currentSection].platforms, False)
             enemy.update(floorHeight=FLOOR_HEIGHT, screenSize=SCREEN_SIZE, platformsTouching=platformsTouching, player=self.player)
 
-
         #checks if the player has touched the exit portal to change sections
         if self.check_exit(self.player):
             self.change_section()
@@ -158,7 +161,7 @@ class Map():
     '''
     starts/initializes the map and first section
     '''
-    def map_start(self):
+    def start(self):
         self.sections[0].start_section(self.player)
 
     '''
@@ -167,13 +170,62 @@ class Map():
     def change_fps(self, fps):
         self.fps = fps
 
+    '''
+    saves the map to a json file in the game_assets/maps folder
+
+    fileName: name of the file including .json tag
+    '''
     def save_map(self, fileName):
-        #path = os.path.join('game_assets', 'maps', fileName)
-        #map = {}
+        map = {}
+        sectiondict = {}
 
+        for section in self.sections:
+            sectiondict = {}
 
+            backgroundFileName = section.backgroundFileName
+            sectiondict["backgroundFileName"] = backgroundFileName
+
+            spawnPortal = section.spawnPortal.rect.topleft
+            sectiondict["spawnPortal"] = spawnPortal
+            exitPortal = section.exitPortal.rect.topleft
+            sectiondict["exitPortal"] = exitPortal
+
+            enemies = [(enemy.rect.topleft, enemy.type) for enemy in section.enemies]
+            sectiondict["enemies"] = enemies
+
+            platforms = [(platform.rect.topleft, platform.length) for platform in section.platforms]
+            sectiondict["platforms"] = platforms
+
+            key = self.sections.index(section)+1
+            map[key] = sectiondict
+
+        path = os.path.join('game_assets', 'maps', fileName)
+        with open(path, 'w') as file:
+            json.dump(map, file)
+
+    '''
+    loads a map saved to a json file in the game_assets/maps folder
+
+    fileName: name of the file including .json tag
+    '''
     def load_map(self, fileName):
-        pass
 
+        path = os.path.join('game_assets', 'maps', fileName)
+        with open(path, 'r') as file:
+            map = json.load(file)
+            
+            for section in map.values():
+                sectionToAdd = Section(section['backgroundFileName'], section['spawnPortal'], section['exitPortal'])
 
-    
+                for enemy in section['enemies']:
+                    if enemy[1] == 'walking':
+                        sectionToAdd.add_walking_enemy(enemy[0])
+                    if enemy[1] == 'flying':
+                        sectionToAdd.add_flying_enemy(enemy[0])
+                    if enemy[1] == 'spikes':
+                        sectionToAdd.add_spikes(enemy[0])
+
+                for platform in section['platforms']:
+                    sectionToAdd.add_platform(platform[0], platform[1])
+
+                self.add_section(sectionToAdd)

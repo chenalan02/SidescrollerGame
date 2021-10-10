@@ -1,6 +1,8 @@
 import pygame
 import os
 
+from enemies import Enemy
+
 '''
 Platform object that player can stand on and pass through from the underside
 
@@ -14,6 +16,9 @@ class Platform(pygame.sprite.Sprite):
         #load and scale image
         self.image = pygame.image.load(os.path.join(("game_assets"), "platform.png"))
         self.image = pygame.transform.scale(self.image, (length, 10))
+
+        #saves length for map saving purposes
+        self.length = length
 
         #sets rect and coordinates
         self.rect = self.image.get_rect()
