@@ -25,8 +25,7 @@ class Section():
 
         #pygame groups for sprites
         self.platforms = pygame.sprite.Group()
-        self.walkingEnemies = pygame.sprite.Group()
-        self.flyingEnemies = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
 
         #creates portal objects for spawn and exit of section
         self.spawnPortal = Portal(spawnPoint)
@@ -58,11 +57,11 @@ class Section():
     '''
     def add_walking_enemy(self, spawn):
         enemy = WalkingEnemy(spawn)
-        self.walkingEnemies.add(enemy)
+        self.enemies.add(enemy)
 
     def add_flying_enemy(self, spawn):
         enemy = FlyingEnemy(spawn)
-        self.flyingEnemies.add(enemy)
+        self.enemies.add(enemy)
 
     '''
     draws everything in the section
@@ -72,6 +71,5 @@ class Section():
     def draw(self, screen):
         screen.blit(self.background, (0,0))
         self.platforms.draw(screen)
-        self.walkingEnemies.draw(screen)
-        self.flyingEnemies.draw(screen)
+        self.enemies.draw(screen)
         self.portals.draw(screen)

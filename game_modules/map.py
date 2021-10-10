@@ -1,4 +1,5 @@
 import pygame
+import os
 
 from player import Player
 
@@ -74,10 +75,9 @@ class Map():
     checks if the player has died by colliding with an enemy or hazard
     '''
     def check_death(self):
-        if pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].walkingEnemies, False) != []:
+        if pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].enemies, False) != []:
             self.restart_game()
-        if pygame.sprite.spritecollide(self.player, self.sections[self.currentSection].flyingEnemies, False) != []:
-            self.restart_game()
+
 
     '''
     restarts the game
@@ -87,10 +87,8 @@ class Map():
         self.currentSection = 0
         #restarts all enemy objects in every section to their default/spawn states
         for section in self.sections:
-            for enemy in section.walkingEnemies:
+            for enemy in section.enemies:
                 enemy.reinitialize()
-            for flyingEnemy in section.flyingEnemies:
-                flyingEnemy.reinitialize()
 
         #restarts the map at the first section
         self.map_start()
@@ -132,14 +130,10 @@ class Map():
         self.player.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
 
         #updates all walking enemies
-        for enemy in self.sections[self.currentSection].walkingEnemies:
+        for enemy in self.sections[self.currentSection].enemies:
             platformsTouching = pygame.sprite.spritecollide(enemy, self.sections[self.currentSection].platforms, False)
-            enemy.update(FLOOR_HEIGHT, SCREEN_SIZE, platformsTouching)
-            
-        #updates flying enemies
-        for flyingEnemy in self.sections[self.currentSection].flyingEnemies:
-            platformsTouching = pygame.sprite.spritecollide(flyingEnemy, self.sections[self.currentSection].platforms, False)
-            flyingEnemy.update(self.player)
+            enemy.update(floorHeight=FLOOR_HEIGHT, screenSize=SCREEN_SIZE, platformsTouching=platformsTouching, player=self.player)
+
 
         #checks if the player has touched the exit portal to change sections
         if self.check_exit(self.player):
@@ -174,7 +168,9 @@ class Map():
         self.fps = fps
 
     def save_map(self, fileName):
-        pass
+        #path = os.path.join('game_assets', 'maps', fileName)
+        #map = {}
+
 
     def load_map(self, fileName):
         pass

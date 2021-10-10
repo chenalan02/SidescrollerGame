@@ -77,10 +77,10 @@ class WalkingEnemy(Enemy):
     screenSize: (width, height) of game screen
     platformsTouching: list of platforms that are colliding with the player
     '''
-    def update(self, floorHeight, screenSize, platformsTouching):
+    def update(self, **kwargs):
 
         #walks left when reaches right boundary
-        if self.rect.x + self.rect.width > screenSize[0]:
+        if self.rect.x + self.rect.width > kwargs['screenSize'][0]:
             self.walkLeft()
 
         #walks right when reaches left boundary
@@ -89,7 +89,7 @@ class WalkingEnemy(Enemy):
         
         #updates horizontal position due to velocity
         self.rect.x += self.velocityX
-        self.fall(floorHeight, platformsTouching)
+        self.fall(kwargs['floorHeight'], kwargs['platformsTouching'])
 
 '''
 Class for flying enemy object
@@ -144,8 +144,8 @@ class FlyingEnemy(Enemy):
 
     coordinates = (x, y)
     '''
-    def update(self, player):
-        angle = self.find_angle(player) 
+    def update(self, **kwargs):
+        angle = self.find_angle(kwargs['player']) 
         
         #components of 1 pixel/frame velocity
         self.velocityX = cos(angle)
