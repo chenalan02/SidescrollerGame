@@ -1,7 +1,12 @@
 # SidescrollerGame
-A sidescroller game created using pygame similar to Mario. Will include a map creation ui and a Reinforcment Learning(RL) autoplay function.
+A collaborative sidescroller game created using pygame similar to Mario. The purpose of this project is for Alan to learn Reinforcment Learning and to teach Eric Python and OOP. Will include a map creation tool that saves map data in a json file and a RL autoplay function.
 
-## Anticipated Contributions
+Game as of October 10, 2021:
+Game Demo          |  Game Creation Tool Demo
+:-------------------------:|:-------------------------:
+![Game Demo](https://github.com/chenalan02/SidescrollerGame-RL/blob/main/game_demo.gif)  |  ![Game Creation Tool Demo](https://github.com/chenalan02/SidescrollerGame-RL/blob/main/map_creation_demo.gif)
+
+## Contributions
 ### Alan Chen
 - project lead
 - game logic lead
@@ -9,12 +14,11 @@ A sidescroller game created using pygame similar to Mario. Will include a map cr
 
 ### Nicholas Cho
 - art lead
-- contribute to game features
-- maybe contribute to RL
+- maybe contribute to game features
 
 ### Eric Li
-- creativity lead
-- contribute to game features
+- creativity/ideas lead
+- contribute to game features(enemy objects)
 - contribute to art
 
 ## Naming and typing conventions
